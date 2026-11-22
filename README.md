@@ -1,4 +1,4 @@
-﻿# 星传 StarDrop
+# 星传 StarDrop
 
 > 手机照片，秒落到电脑上。扫码即传，手机零安装。
 >
@@ -79,7 +79,12 @@
 cargo build --release --manifest-path src-tauri/Cargo.toml
 ```
 
-产物在 `src-tauri/target/release/stardrop.exe`，同目录会生成 `WebView2Loader.dll`。**运行时两者必须放在一起**，否则会报 `0xC0000135`（找不到 DLL）。
+产物在 `src-tauri/target/release/stardrop.exe`。
+
+- **MSVC 工具链**：WebView2Loader 静态链接，单个 exe 即可运行
+- **MinGW-w64 GNU 工具链**：同目录会生成 `WebView2Loader.dll`，运行时必须和 exe 放在一起，否则会报 `0xC0000135`
+
+`scripts/package.ps1` 会自动处理：存在 `WebView2Loader.dll` 就一起打进 zip，不存在则跳过。
 
 ### 打包
 
@@ -87,7 +92,7 @@ cargo build --release --manifest-path src-tauri/Cargo.toml
 pwsh scripts/package.ps1
 ```
 
-生成 `dist/StarDrop-<version>-win-x64.zip`，内含 exe、`WebView2Loader.dll`、图标、使用说明和卸载脚本。
+生成 `dist/StarDrop-<version>-win-x64.zip`，内含 exe、图标、使用说明和卸载脚本；GNU 构建会额外包含 `WebView2Loader.dll`。
 
 ### 开发说明
 

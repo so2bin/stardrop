@@ -30,7 +30,10 @@ Remove-Item $stage -Recurse -Force -ErrorAction SilentlyContinue
 New-Item -ItemType Directory -Force $stage | Out-Null
 
 Copy-Item (Join-Path $release "stardrop.exe") (Join-Path $stage "StarDrop.exe")
-Copy-Item (Join-Path $release "WebView2Loader.dll") (Join-Path $stage "WebView2Loader.dll")
+
+# GNU builds link WebView2Loader dynamically; MSVC links it statically.
+$loader = Join-Path $release "WebView2Loader.dll"
+if (Test-Path $loader) { Copy-Item $loader (Join-Path $stage "WebView2Loader.dll") }
 
 $ico = Join-Path $root "src-tauri\icons\icon.ico"
 if (Test-Path $ico) { Copy-Item $ico (Join-Path $stage "StarDrop.ico") }
