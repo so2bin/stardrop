@@ -41,7 +41,9 @@ pub struct Shared {
 
 impl Shared {
     pub fn boot() -> Arc<Shared> {
-        let home = std::env::var("USERPROFILE").unwrap_or_else(|_| "C:\\".to_string());
+        let home = std::env::var("USERPROFILE")
+            .or_else(|_| std::env::var("HOME"))
+            .unwrap_or_else(|_| ".".to_string());
         let save_dir = match std::env::var("STARDROP_DIR") {
             Ok(dir) if !dir.trim().is_empty() => PathBuf::from(dir),
             _ => Path::new(&home).join("Pictures").join("星传"),
@@ -270,8 +272,32 @@ fn bind_listener(preferred: u16) -> (Option<std::net::TcpListener>, u16) {
 }
 
 fn config_path() -> Option<PathBuf> {
-    let base = std::env::var("LOCALAPPDATA").ok()?;
-    Some(Path::new(&base).join("StarDrop").join("config.json"))
+    #[cfg(windows)]
+    {
+        let base = std::env::var("LOCALAPPDATA").ok()?;
+        return Some(Path::new(&base).join("StarDrop").join("config.json"));
+    }
+    #[cfg(target_os = "macos")]
+    {
+        let home = std::env::var("HOME").ok()?;
+        return Some(
+            Path::new(&home)
+                .join("Library")
+                .join("Application Support")
+                .join("StarDrop")
+                .join("config.json"),
+        );
+    }
+    #[cfg(all(unix, not(target_os = "macos")))]
+    {
+        let base = std::env::var("XDG_CONFIG_HOME")
+            .ok()
+            .filter(|v| !v.trim().is_empty())
+            .or_else(|| std::env::var("HOME").ok().map(|h| format!("{h}/.config")))?;
+        return Some(Path::new(&base).join("StarDrop").join("config.json"));
+    }
+    #[allow(unreachable_code)]
+    None
 }
 
 fn read_config() -> Option<(Option<String>, Option<u16>)> {

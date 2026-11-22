@@ -1,5 +1,6 @@
 use std::path::{Path, PathBuf};
 
+#[cfg(windows)]
 #[repr(C)]
 #[derive(Default)]
 struct WinSystemTime {
@@ -13,15 +14,69 @@ struct WinSystemTime {
     milliseconds: u16,
 }
 
+#[cfg(windows)]
 #[link(name = "kernel32")]
 extern "system" {
     fn GetLocalTime(lp_system_time: *mut WinSystemTime);
 }
 
-pub fn local_now() -> (u16, u16, u16, u16, u16, u16) {
+#[cfg(windows)]
+fn local_now() -> (u16, u16, u16, u16, u16, u16) {
     let mut t = WinSystemTime::default();
     unsafe { GetLocalTime(&mut t) };
     (t.year, t.month, t.day, t.hour, t.minute, t.second)
+}
+
+#[cfg(unix)]
+#[repr(C)]
+struct UnixTm {
+    tm_sec: i32,
+    tm_min: i32,
+    tm_hour: i32,
+    tm_mday: i32,
+    tm_mon: i32,
+    tm_year: i32,
+    tm_wday: i32,
+    tm_yday: i32,
+    tm_isdst: i32,
+    tm_gmtoff: i64,
+    tm_zone: *const i8,
+}
+
+#[cfg(unix)]
+extern "C" {
+    fn time(t: *mut i64) -> i64;
+    fn localtime_r(t: *const i64, tm: *mut UnixTm) -> *mut UnixTm;
+}
+
+#[cfg(unix)]
+fn local_now() -> (u16, u16, u16, u16, u16, u16) {
+    let mut stamp: i64 = 0;
+    let mut tm = UnixTm {
+        tm_sec: 0,
+        tm_min: 0,
+        tm_hour: 0,
+        tm_mday: 1,
+        tm_mon: 0,
+        tm_year: 70,
+        tm_wday: 0,
+        tm_yday: 0,
+        tm_isdst: 0,
+        tm_gmtoff: 0,
+        tm_zone: std::ptr::null(),
+    };
+    unsafe {
+        time(&mut stamp);
+        localtime_r(&stamp, &mut tm);
+    }
+    (
+        (tm.tm_year + 1900) as u16,
+        (tm.tm_mon + 1) as u16,
+        tm.tm_mday as u16,
+        tm.tm_hour as u16,
+        tm.tm_min as u16,
+        tm.tm_sec as u16,
+    )
 }
 
 pub fn today() -> String {
@@ -204,6 +259,7 @@ pub fn local_ip() -> Option<String> {
     Some(s)
 }
 
+#[cfg(windows)]
 fn is_private_v4(ip: &std::net::Ipv4Addr) -> bool {
     let o = ip.octets();
     o[0] == 10
@@ -212,35 +268,40 @@ fn is_private_v4(ip: &std::net::Ipv4Addr) -> bool {
 }
 
 pub fn lan_ips() -> Vec<String> {
-    use std::os::windows::process::CommandExt;
-    use std::process::Command;
     let mut out: Vec<String> = Vec::new();
     if let Some(primary) = local_ip() {
         out.push(primary);
     }
-    let output = Command::new("ipconfig.exe")
-        .creation_flags(0x0800_0000)
-        .output();
-    if let Ok(output) = output {
-        let text = String::from_utf8_lossy(&output.stdout);
-        for line in text.lines() {
-            if !line.contains("IPv4") {
-                continue;
-            }
-            for token in line.split(|c: char| !(c.is_ascii_digit() || c == '.')) {
-                if token.is_empty() || token.matches('.').count() != 3 {
+
+    #[cfg(windows)]
+    {
+        use std::os::windows::process::CommandExt;
+        use std::process::Command;
+        let output = Command::new("ipconfig.exe")
+            .creation_flags(0x0800_0000)
+            .output();
+        if let Ok(output) = output {
+            let text = String::from_utf8_lossy(&output.stdout);
+            for line in text.lines() {
+                if !line.contains("IPv4") {
                     continue;
                 }
-                if let Ok(ip) = token.parse::<std::net::Ipv4Addr>() {
-                    if !ip.is_loopback() && is_private_v4(&ip) && !ip.is_link_local() {
-                        let s = ip.to_string();
-                        if !out.contains(&s) {
-                            out.push(s);
+                for token in line.split(|c: char| !(c.is_ascii_digit() || c == '.')) {
+                    if token.is_empty() || token.matches('.').count() != 3 {
+                        continue;
+                    }
+                    if let Ok(ip) = token.parse::<std::net::Ipv4Addr>() {
+                        if !ip.is_loopback() && is_private_v4(&ip) && !ip.is_link_local() {
+                            let s = ip.to_string();
+                            if !out.contains(&s) {
+                                out.push(s);
+                            }
                         }
                     }
                 }
             }
         }
     }
+
     out
 }
