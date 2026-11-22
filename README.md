@@ -3,7 +3,7 @@
 > Phone photos, straight to your PC. Scan a QR code, pick photos — done. No phone app to install.
 
 [![build](https://github.com/so2bin/stardrop/actions/workflows/build.yml/badge.svg)](https://github.com/so2bin/stardrop/actions/workflows/build.yml)
-![platform](https://img.shields.io/badge/platform-Windows%2010%2F11-0078D4)
+![platform](https://img.shields.io/badge/platform-Windows%20%7C%20macOS%20%7C%20Linux-0078D4)
 ![tauri](https://img.shields.io/badge/Tauri-2-24C8DB)
 ![license](https://img.shields.io/badge/license-MIT-green)
 
@@ -48,23 +48,31 @@ When a phone connects, the QR panel collapses to a single “Phone connected” 
 
 ### Download
 
-Grab `StarDrop-<version>-win-x64.zip` from [Releases](https://github.com/so2bin/stardrop/releases/latest), unzip it, and run `StarDrop.exe`.
+Get the installer for your platform from [Releases](https://github.com/so2bin/stardrop/releases/latest):
 
-> The build is unsigned. If Windows SmartScreen warns, choose **More info → Run anyway**.
-> On first launch, allow the Windows Firewall prompt for private/public networks, otherwise the phone cannot connect.
+| Platform | File | Notes |
+| --- | --- | --- |
+| Windows 10/11 x64 | `StarDrop_<version>_x64-setup.exe` | one-click installer; a portable `StarDrop-<version>-win-x64.zip` is also available |
+| macOS 11+ (Apple Silicon) | `StarDrop_<version>_aarch64.dmg` | unsigned; right-click the app → **Open** on first launch |
+| Linux x64 | `StarDrop_<version>_amd64.deb` / `.AppImage` | AppImage: `chmod +x` and run |
+
+> The builds are unsigned. On Windows, if SmartScreen warns, choose **More info → Run anyway**. On macOS, right-click → **Open**, or run `xattr -dr com.apple.quarantine /Applications/StarDrop.app`.
+> On first launch, allow the firewall prompt (Windows), otherwise the phone cannot connect.
 
 ### Usage
 
 1. Connect the phone to the same Wi-Fi as the PC (NearLink network, hotspot, or USB tethering also work).
 2. Scan the QR code in the app with the phone camera or browser.
-3. Pick photos — they are saved to `C:\Users\<you>\Pictures\星传\<date>\`.
+3. Pick photos — they are saved to `~/Pictures/星传/<date>/` (`C:\Users\<you>\Pictures\星传\<date>\` on Windows).
 4. To send files the other way, drag them into the app window and download them from the phone page.
 
 The PIN and port live in:
 
-```
-%LOCALAPPDATA%\StarDrop\config.json
-```
+| Platform | Path |
+| --- | --- |
+| Windows | `%LOCALAPPDATA%\StarDrop\config.json` |
+| macOS | `~/Library/Application Support/StarDrop/config.json` |
+| Linux | `~/.config/StarDrop/config.json` |
 
 For example `{"pin":"1234","port":47823}`. To change them, close the app, edit this file, and start it again.
 
@@ -73,8 +81,10 @@ For example `{"pin":"1234","port":47823}`. To change them, close the app, edit t
 ### Requirements
 
 - Windows 10/11 with the WebView2 Runtime (bundled with Windows 11; usually present on Windows 10)
+- macOS 11+ or a Linux desktop with `webkit2gtk-4.1`
 - Rust 1.90+
-- MSVC toolchain (recommended) or MinGW-w64 GNU toolchain (this project has also been verified with GNU)
+- Windows: MSVC toolchain (recommended) or MinGW-w64 GNU toolchain (this project has also been verified with GNU)
+- CI builds the Windows NSIS installer, macOS DMG and Linux `.deb`/AppImage with the official Tauri CLI
 
 ### Compile
 
@@ -98,6 +108,19 @@ This creates `dist/StarDrop-<version>-win-x64.zip` with the exe, icon, usage not
 ```powershell
 powershell -NoProfile -ExecutionPolicy Bypass -File scripts/package.ps1
 ```
+
+### Installer bundles
+
+With the [Tauri CLI](https://tauri.app/start/prerequisites/):
+
+```powershell
+npm install -g @tauri-apps/cli@^2
+tauri build --bundles nsis          # Windows setup.exe
+tauri build --bundles dmg           # macOS .dmg
+tauri build --bundles deb,appimage  # Linux .deb / .AppImage
+```
+
+The same commands run in CI on `windows-latest`, `macos-latest` and `ubuntu-22.04`; artifacts are uploaded for every push, and on a `v*` tag they are attached to the GitHub Release.
 
 ### Development notes
 
@@ -157,6 +180,8 @@ Pairing check: query parameter `k` or header `X-Key`.
 ## Limitations
 
 - Windows only (Tauri itself is portable, but the WebView2-specific bits need work)
+- Single instance and the “Fix connection” firewall helper are Windows-only
+- macOS / Linux builds are new and lightly tested; the core transfer flow is shared, but open/reveal uses Finder / `xdg-open`
 - HEIC preview depends on the system codec; if decoding fails you get an extension placeholder, but the file is still saved
 - The phone and PC must be able to reach each other; guest Wi-Fi / AP isolation will block it
 - No resume support — prefer a stable Wi-Fi connection for very large videos

@@ -3,7 +3,7 @@
 > 手机照片，秒落到电脑上。扫码即传，手机零安装。
 
 [![build](https://github.com/so2bin/stardrop/actions/workflows/build.yml/badge.svg)](https://github.com/so2bin/stardrop/actions/workflows/build.yml)
-![platform](https://img.shields.io/badge/platform-Windows%2010%2F11-0078D4)
+![platform](https://img.shields.io/badge/platform-Windows%20%7C%20macOS%20%7C%20Linux-0078D4)
 ![tauri](https://img.shields.io/badge/Tauri-2-24C8DB)
 ![license](https://img.shields.io/badge/license-MIT-green)
 
@@ -48,23 +48,31 @@
 
 ### 下载
 
-到 [Releases](https://github.com/so2bin/stardrop/releases/latest) 下载 `StarDrop-<version>-win-x64.zip`，解压后双击 `StarDrop.exe`。
+到 [Releases](https://github.com/so2bin/stardrop/releases/latest) 按平台选择：
 
-> 这是未签名的开源构建。Windows 提示「未知发布者」时，选择「更多信息 → 仍要运行」。
-> 首次启动如果弹出防火墙提示，请勾选专用/公用网络并允许，否则手机无法访问。
+| 平台 | 文件 | 说明 |
+| --- | --- | --- |
+| Windows 10/11 x64 | `StarDrop_<version>_x64-setup.exe` | 一键安装器；也提供便携版 `StarDrop-<version>-win-x64.zip` |
+| macOS 11+（Apple Silicon） | `StarDrop_<version>_aarch64.dmg` | 未签名；首次打开请右键 App →「打开」 |
+| Linux x64 | `StarDrop_<version>_amd64.deb` / `.AppImage` | AppImage 需 `chmod +x` 后运行 |
+
+> 构建未签名。Windows 提示「未知发布者」时选择「更多信息 → 仍要运行」；macOS 右键「打开」，或执行 `xattr -dr com.apple.quarantine /Applications/StarDrop.app`。
+> 首次启动请允许防火墙提示（Windows），否则手机无法访问。
 
 ### 使用
 
 1. 手机连上与电脑相同的 Wi‑Fi（星闪网络、热点、USB 网络共享也可以）
 2. 用手机相机 / 浏览器扫描窗口右侧二维码
-3. 选照片，自动保存到 `C:\Users\<你>\Pictures\星传\<日期>\`
+3. 选照片，自动保存到 `~/Pictures/星传/<日期>/`（Windows 为 `C:\Users\<你>\Pictures\星传\<日期>\`）
 4. 电脑要发文件给手机：把文件拖进窗口，手机页面底部点下载
 
 配对码和端口保存在：
 
-```
-%LOCALAPPDATA%\StarDrop\config.json
-```
+| 平台 | 路径 |
+| --- | --- |
+| Windows | `%LOCALAPPDATA%\StarDrop\config.json` |
+| macOS | `~/Library/Application Support/StarDrop/config.json` |
+| Linux | `~/.config/StarDrop/config.json` |
 
 形如 `{"pin":"1234","port":47823}`。想换配对码或端口，关闭应用后修改此文件再启动。
 
@@ -73,8 +81,10 @@
 ### 依赖
 
 - Windows 10/11 + WebView2 Runtime（Win11 自带，Win10 一般也已安装）
+- macOS 11+ 或带 `webkit2gtk-4.1` 的 Linux 桌面
 - Rust 1.90+
-- MSVC 工具链（推荐）或 MinGW-w64 GNU 工具链（本项目在 GNU 下也验证过）
+- Windows：MSVC 工具链（推荐）或 MinGW-w64 GNU 工具链（本项目在 GNU 下也验证过）
+- CI 使用官方 Tauri CLI 构建 Windows NSIS 安装器、macOS DMG、Linux `.deb`/AppImage
 
 ### 编译
 
@@ -98,6 +108,19 @@ pwsh scripts/package.ps1
 ```powershell
 powershell -NoProfile -ExecutionPolicy Bypass -File scripts/package.ps1
 ```
+
+### 安装包
+
+使用 [Tauri CLI](https://tauri.app/start/prerequisites/)：
+
+```powershell
+npm install -g @tauri-apps/cli@^2
+tauri build --bundles nsis          # Windows setup.exe
+tauri build --bundles dmg           # macOS .dmg
+tauri build --bundles deb,appimage  # Linux .deb / .AppImage
+```
+
+CI 会在 `windows-latest`、`macos-latest`、`ubuntu-22.04` 上跑同样的命令：每次 push 都上传 artifact，打 `v*` tag 时自动附加到 GitHub Release。
 
 ### 开发说明
 
@@ -157,6 +180,8 @@ scripts/                              构建 / 打包脚本
 ## 已知限制
 
 - 仅 Windows（Tauri 本身可移植，但 WebView2 相关逻辑需要调整）
+- 单实例与「修复连接」防火墙按钮仅 Windows 支持
+- macOS / Linux 构建较新、验证较少；核心传输逻辑共用，打开/定位分别走 Finder 与 `xdg-open`
 - HEIC 预览依赖系统解码器，解码失败时显示扩展名占位图，文件仍会正常保存
 - 手机浏览器必须与电脑网络互通；访客 Wi‑Fi / AP 隔离会导致打不开
 - 没有做断点续传，超大视频建议在稳定 Wi‑Fi 下传输
