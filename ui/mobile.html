@@ -1,0 +1,108 @@
+<!doctype html>
+<html lang="zh-CN">
+<head>
+<meta charset="utf-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover" />
+<meta name="theme-color" content="#06070b" />
+<meta name="apple-mobile-web-app-capable" content="yes" />
+<meta name="apple-mobile-web-app-status-bar-style" content="black-translucent" />
+<meta name="format-detection" content="telephone=no" />
+<title>星传 · 发照片到电脑</title>
+<link rel="apple-touch-icon" href="/apple-touch-icon.png" />
+<link rel="stylesheet" href="/m.css" />
+</head>
+<body>
+<svg class="sprite" aria-hidden="true">
+  <symbol id="i-upload" viewBox="0 0 24 24"><path d="M12 16V4M7 9l5-5 5 5"/><path d="M4 16v3a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2v-3"/></symbol>
+  <symbol id="i-camera" viewBox="0 0 24 24"><path d="M4 8.5A1.5 1.5 0 0 1 5.5 7h2L9 4.8h6L16.5 7h2A1.5 1.5 0 0 1 20 8.5v9A1.5 1.5 0 0 1 18.5 19h-13A1.5 1.5 0 0 1 4 17.5z"/><circle cx="12" cy="13" r="3.4"/></symbol>
+  <symbol id="i-send" viewBox="0 0 24 24"><path d="M4 11.5L20 4l-4.2 16-4.3-6.2z"/><path d="M11.5 13.8L20 4"/></symbol>
+  <symbol id="i-download" viewBox="0 0 24 24"><path d="M12 4v11M7 10.5l5 5 5-5"/><path d="M4.5 19.5h15"/></symbol>
+  <symbol id="i-check" viewBox="0 0 24 24"><path d="M5 12.5l4.5 4.5L19 7"/></symbol>
+  <symbol id="i-refresh" viewBox="0 0 24 24"><path d="M20 11a8 8 0 1 0-2.3 5.7M20 5v6h-6"/></symbol>
+  <symbol id="i-wifi" viewBox="0 0 24 24"><path d="M3 9.5a14 14 0 0 1 18 0M6 13a9.5 9.5 0 0 1 12 0M9 16.5a5 5 0 0 1 6 0"/><circle cx="12" cy="20" r=".8"/></symbol>
+  <symbol id="i-image" viewBox="0 0 24 24"><rect x="3" y="4" width="18" height="16" rx="2.5"/><circle cx="8.5" cy="9.5" r="1.5"/><path d="M4 17l5-5 4 4 3-3 4 4"/></symbol>
+  <symbol id="i-video" viewBox="0 0 24 24"><rect x="3" y="5" width="18" height="14" rx="2.5"/><path d="M10 9.5l5 2.5-5 2.5z"/></symbol>
+  <symbol id="i-file" viewBox="0 0 24 24"><path d="M13 3H7a2 2 0 0 0-2 2v14a2 2 0 0 0 2 2h10a2 2 0 0 0 2-2V9z"/><path d="M13 3v6h6"/></symbol>
+  <symbol id="i-pc" viewBox="0 0 24 24"><rect x="3" y="4" width="18" height="12" rx="2"/><path d="M9 20h6M12 16v4"/></symbol>
+  <symbol id="i-x" viewBox="0 0 24 24"><path d="M6 6l12 12M18 6L6 18"/></symbol>
+</svg>
+
+<div class="bg" aria-hidden="true"><i class="b1"></i><i class="b2"></i><i class="b3"></i></div>
+
+<div class="shell">
+  <header class="top">
+    <div class="brand">
+      <img src="/icon-192.png" alt="" />
+      <div><b>星传</b><span>STARDROP</span></div>
+    </div>
+    <div class="pc-chip" id="pcChip"><i></i><svg><use href="#i-pc"/></svg><span id="deviceName">连接中…</span></div>
+  </header>
+
+  <div class="net-warn" id="netWarn"><svg><use href="#i-wifi"/></svg> 与电脑断开，请确认连接了同一个 Wi‑Fi</div>
+
+  <main>
+    <section class="hero">
+      <div class="eyebrow"><i></i> 已连接电脑 · 同一网络</div>
+      <h1>照片，直接<br><em>落到电脑上</em></h1>
+      <p class="lede">不用装 App，也不压原图。选好就自动存进电脑的「图片&#92;星传」。</p>
+
+      <div class="cta">
+        <label class="btn-main" for="pick"><svg><use href="#i-upload"/></svg><span>选择照片 / 视频</span></label>
+        <label class="btn-sub" for="camera"><svg><use href="#i-camera"/></svg><span>拍照</span></label>
+      </div>
+      <input id="pick" type="file" accept="image/*,video/*" multiple hidden />
+      <input id="camera" type="file" accept="image/*" capture="environment" hidden />
+      <p class="micro">支持多选 · 原图传输 · 按日期自动归档</p>
+    </section>
+
+    <section class="queue-wrap" id="queueWrap" hidden>
+      <div class="queue-head">
+        <h2 id="queueTitle">正在发送</h2>
+        <span class="queue-sum" id="queueSum"></span>
+      </div>
+      <div class="queue" id="queue"></div>
+    </section>
+
+    <section class="card">
+      <div class="card-head">
+        <h2>发一段文字</h2>
+        <span>链接 / 地址 / 验证码</span>
+      </div>
+      <div class="text-send">
+        <textarea id="textInput" rows="2" placeholder="粘贴内容，电脑上直接看到…" enterkeyhint="send"></textarea>
+        <button id="sendText" class="send-btn" aria-label="发送文字"><svg><use href="#i-send"/></svg></button>
+      </div>
+    </section>
+
+    <section class="card recv">
+      <div class="card-head">
+        <h2>电脑发来的文件</h2>
+        <button class="link-btn" id="refreshRecv"><svg><use href="#i-refresh"/></svg> 刷新</button>
+      </div>
+      <div class="recv-list" id="recvList"><p class="muted">暂无文件</p></div>
+    </section>
+
+    <footer class="foot">
+      <span>StarDrop · 只在同一局域网内可见</span>
+      <button id="changePin">换配对码</button>
+    </footer>
+  </main>
+</div>
+
+<div class="sheet" id="pinSheet" aria-hidden="true">
+  <div class="sheet-bg" data-close-pin="1"></div>
+  <div class="sheet-card" role="dialog" aria-modal="true">
+    <div class="grip"></div>
+    <h3>连接这台电脑</h3>
+    <p>输入电脑端「手机连接」卡片上显示的 4 位配对码</p>
+    <input id="pinInput" class="pin-input" inputmode="numeric" autocomplete="one-time-code" maxlength="4" placeholder="••••" />
+    <div class="sheet-err" id="pinErr"></div>
+    <button class="btn-main sheet-go" id="pinGo">连接</button>
+    <button class="sheet-cancel" data-close-pin="1">稍后再说</button>
+  </div>
+</div>
+
+<div class="toast" id="toast"></div>
+<script src="/m.js"></script>
+</body>
+</html>

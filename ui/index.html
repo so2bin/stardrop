@@ -1,0 +1,178 @@
+<!doctype html>
+<html lang="zh-CN">
+<head>
+<meta charset="utf-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1" />
+<title>星传 StarDrop</title>
+<link rel="stylesheet" href="styles.css" />
+</head>
+<body>
+<svg class="sprite" aria-hidden="true">
+  <symbol id="i-arrow" viewBox="0 0 24 24"><path d="M12 19V5M6 11l6-6 6 6"/></symbol>
+  <symbol id="i-folder" viewBox="0 0 24 24"><path d="M3 7.5A1.5 1.5 0 0 1 4.5 6h4l2 2.5h7A1.5 1.5 0 0 1 19 10v7.5a1.5 1.5 0 0 1-1.5 1.5h-13A1.5 1.5 0 0 1 3 17.5z"/></symbol>
+  <symbol id="i-copy" viewBox="0 0 24 24"><rect x="9" y="9" width="11" height="11" rx="2.5"/><path d="M15 5.5A2.5 2.5 0 0 0 12.5 3H6.5A2.5 2.5 0 0 0 4 5.5v7A2.5 2.5 0 0 0 6.5 15"/></symbol>
+  <symbol id="i-refresh" viewBox="0 0 24 24"><path d="M20 11a8 8 0 1 0-2.3 5.7M20 5v6h-6"/></symbol>
+  <symbol id="i-swap" viewBox="0 0 24 24"><path d="M4 8h13l-3-3M20 16H7l3 3"/></symbol>
+  <symbol id="i-chevron" viewBox="0 0 24 24"><path d="M6 9.5l6 6 6-6"/></symbol>
+  <symbol id="i-check" viewBox="0 0 24 24"><path d="M4.5 12.5l5 5 10-11"/></symbol>
+  <symbol id="i-x" viewBox="0 0 24 24"><path d="M6 6l12 12M18 6L6 18"/></symbol>
+  <symbol id="i-external" viewBox="0 0 24 24"><path d="M14 4h6v6M20 4l-9 9M18 14v5a1 1 0 0 1-1 1H5a1 1 0 0 1-1-1V7a1 1 0 0 1 1-1h5"/></symbol>
+  <symbol id="i-shield" viewBox="0 0 24 24"><path d="M12 3l7 3v5.5c0 4.3-2.9 7.6-7 9.5-4.1-1.9-7-5.2-7-9.5V6z"/><path d="M9.2 12.2l2 2 3.6-4"/></symbol>
+  <symbol id="i-power" viewBox="0 0 24 24"><path d="M12 3v9"/><path d="M7.3 6.3a7.5 7.5 0 1 0 9.4 0"/></symbol>
+  <symbol id="i-image" viewBox="0 0 24 24"><rect x="3" y="4" width="18" height="16" rx="2.5"/><circle cx="8.5" cy="9.5" r="1.5"/><path d="M4 17l5-5 4 4 3-3 4 4"/></symbol>
+  <symbol id="i-play" viewBox="0 0 24 24"><path d="M9 6.5l9 5.5-9 5.5z"/></symbol>
+  <symbol id="i-quote" viewBox="0 0 24 24"><path d="M9 7H5.5A1.5 1.5 0 0 0 4 8.5V12h5V7zM9 12c0 3-1.5 4.5-4 5M20 7h-3.5A1.5 1.5 0 0 0 15 8.5V12h5V7zM20 12c0 3-1.5 4.5-4 5"/></symbol>
+  <symbol id="i-file" viewBox="0 0 24 24"><path d="M13 3H7a2 2 0 0 0-2 2v14a2 2 0 0 0 2 2h10a2 2 0 0 0 2-2V9z"/><path d="M13 3v6h6"/></symbol>
+  <symbol id="i-phone" viewBox="0 0 24 24"><rect x="7" y="2.5" width="10" height="19" rx="2.5"/><path d="M10.5 18.5h3"/></symbol>
+  <symbol id="i-pc" viewBox="0 0 24 24"><rect x="3" y="4" width="18" height="12" rx="2"/><path d="M9 20h6M12 16v4"/></symbol>
+  <symbol id="i-wifi" viewBox="0 0 24 24"><path d="M3 9.5a14 14 0 0 1 18 0M6 13a9.5 9.5 0 0 1 12 0M9 16.5a5 5 0 0 1 6 0"/><circle cx="12" cy="20" r=".8"/></symbol>
+  <symbol id="i-trash" viewBox="0 0 24 24"><path d="M4 7h16M9 7V4.5h6V7M6.5 7l1 13h9l1-13"/></symbol>
+  <symbol id="i-plus" viewBox="0 0 24 24"><path d="M12 5v14M5 12h14"/></symbol>
+</svg>
+
+<div class="app">
+  <div class="aurora" aria-hidden="true">
+    <i class="a1"></i><i class="a2"></i><i class="a3"></i>
+    <div class="grain"></div>
+  </div>
+
+  <header class="topbar">
+    <div class="brand">
+      <div class="mark"><svg viewBox="0 0 24 24"><path d="M12 19.5V5M5.8 11L12 4.8 18.2 11M6.5 19.5h11" fill="none" stroke="#fff" stroke-width="2.1" stroke-linecap="round" stroke-linejoin="round"/></svg></div>
+      <div class="brand-text">
+        <h1>星传 <span>StarDrop</span></h1>
+        <p>手机照片，秒落到这台电脑</p>
+      </div>
+    </div>
+    <div class="topbar-right">
+      <div class="status" id="statusPill"><i></i><span id="statusText">服务运行中</span><code id="statusPort">:47823</code></div>
+      <button class="icon-btn" id="openSaveFolder" title="打开保存文件夹"><svg><use href="#i-folder"/></svg></button>
+      <button class="icon-btn" id="quitBtn" title="退出星传"><svg><use href="#i-power"/></svg></button>
+    </div>
+  </header>
+
+  <main class="layout">
+    <section class="main-col">
+      <div class="tabs" role="tablist">
+        <button class="tab active" data-tab="inbox" role="tab">收到的 <span class="count" id="inboxCount">0</span></button>
+        <button class="tab" data-tab="send" role="tab">发送到手机 <span class="count" id="outboxCount">0</span></button>
+        <div class="tab-spacer"></div>
+        <div class="statline" id="statLine"></div>
+      </div>
+
+      <div class="panel" id="panel-inbox">
+        <div class="grid" id="grid"></div>
+        <div class="empty" id="emptyInbox">
+          <div class="empty-orbit"><div class="empty-core"><svg><use href="#i-image"/></svg></div></div>
+          <h2>还没有收到照片</h2>
+          <p>用手机扫描右侧二维码，选好照片就会实时出现在这里。</p>
+          <div class="empty-hint"><svg><use href="#i-arrow"/></svg> 也可以把文件拖进窗口，反向发到手机</div>
+        </div>
+      </div>
+
+      <div class="panel hidden" id="panel-send">
+        <div class="dropzone" id="dropzone">
+          <div class="dz-icon"><svg><use href="#i-plus"/></svg></div>
+          <div class="dz-text">
+            <h3>拖文件到这里，或点击选择</h3>
+            <p>文件会进入手机的下载区，手机浏览器打开星传页面即可保存</p>
+          </div>
+          <button class="dz-btn" id="pickFiles">选择文件</button>
+        </div>
+        <input type="file" id="fileInput" multiple hidden />
+        <div class="sendlist" id="sendList"></div>
+        <div class="empty small" id="emptySend">
+          <p>还没有要发送的文件</p>
+        </div>
+      </div>
+    </section>
+
+    <aside class="side">
+      <div class="connect-card" id="connectCard">
+        <div class="card-head" id="connectHead">
+          <div class="card-title"><svg><use href="#i-phone"/></svg> 手机连接</div>
+          <div class="head-right">
+            <span class="live-pill idle" id="livePill"><i></i>等待扫码</span>
+            <svg class="chev"><use href="#i-chevron"/></svg>
+          </div>
+        </div>
+
+        <div class="connect-body" id="connectBody">
+        <div class="qr-shell">
+          <canvas id="qrCanvas" width="200" height="200"></canvas>
+          <div class="qr-empty hidden" id="qrEmpty">
+            <svg><use href="#i-wifi"/></svg>
+            <span>电脑未连入局域网</span>
+          </div>
+        </div>
+
+        <div class="url-row">
+          <code id="urlText">正在获取地址…</code>
+          <button class="net-count hidden" id="netCount" title="切换手机可用的网络地址">2 个地址</button>
+          <button class="mini-icon hidden" id="cycleNet" title="切换网络地址"><svg><use href="#i-swap"/></svg></button>
+          <button class="mini-icon" id="refreshNet" title="刷新地址"><svg><use href="#i-refresh"/></svg></button>
+        </div>
+        <div class="pin-row">
+          <span>配对码</span><b id="pinText">----</b>
+          <em>已包含在二维码里</em>
+        </div>
+
+        <div class="steps">
+          <div class="step"><i>1</i><p>手机连接与电脑相同的 Wi‑Fi<span>华为星闪 / 热点网络同样可用</span></p></div>
+          <div class="step"><i>2</i><p>用相机或浏览器扫描二维码<span>也可以手动输入上面的地址</span></p></div>
+          <div class="step"><i>3</i><p>选照片，自动存进「图片\星传」<span>支持多选、原图、拍照</span></p></div>
+        </div>
+
+        <div class="side-actions">
+          <button class="btn primary" id="copyLink"><svg><use href="#i-copy"/></svg> 复制链接</button>
+          <button class="btn ghost" id="fixFirewall" title="为本应用放行 Windows 防火墙"><svg><use href="#i-shield"/></svg> 修复连接</button>
+        </div>
+        <p class="fineprint">打不开页面？点「修复连接」放行 Windows 防火墙。</p>
+        </div>
+        <p class="collapsed-note">手机已连接，可以直接传图了 · 点击标题展开二维码</p>
+      </div>
+
+      <div class="tip-line"><svg><use href="#i-arrow"/></svg> 把文件拖进窗口任意位置，即可反向发到手机</div>
+
+      <button class="save-note" id="saveNote">
+        <span>保存到</span>
+        <code id="saveDirText">图片\星传</code>
+        <svg><use href="#i-external"/></svg>
+      </button>
+    </aside>
+  </main>
+
+  <div class="drop-overlay" id="dropOverlay">
+    <div class="drop-frame">
+      <div class="drop-ring"><svg><use href="#i-arrow"/></svg></div>
+      <h2>松手，发送到手机</h2>
+      <p>文件会出现在手机页面的下载区</p>
+    </div>
+  </div>
+
+  <div class="toasts" id="toasts"></div>
+
+  <div class="modal" id="modal" aria-hidden="true">
+    <div class="modal-backdrop" data-close="1"></div>
+    <div class="modal-card" role="dialog" aria-modal="true">
+      <header class="modal-head">
+        <div class="modal-title-wrap">
+          <h3 id="modalTitle">预览</h3>
+          <p id="modalSub"></p>
+        </div>
+        <div class="modal-actions">
+          <button class="btn tiny" id="modalOpen"><svg><use href="#i-external"/></svg> 打开</button>
+          <button class="btn tiny" id="modalReveal"><svg><use href="#i-folder"/></svg> 定位</button>
+          <button class="btn tiny" id="modalCopy"><svg><use href="#i-copy"/></svg> 复制路径</button>
+          <button class="modal-x" data-close="1"><svg><use href="#i-x"/></svg></button>
+        </div>
+      </header>
+      <div class="modal-body" id="modalBody"></div>
+    </div>
+  </div>
+</div>
+
+<script src="qr.js"></script>
+<script src="app.js"></script>
+</body>
+</html>

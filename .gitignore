@@ -1,0 +1,19 @@
+# build artifacts
+/src-tauri/target/
+/src-tauri/gen/
+/dist/
+
+# local / QA only
+/tools/
+/testdata/
+*.log
+*.log.err
+*.zip
+.wv2*/
+.probe/
+
+# editors / OS
+.vscode/
+.idea/
+.DS_Store
+Thumbs.db
