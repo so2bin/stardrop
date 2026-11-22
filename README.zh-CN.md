@@ -36,12 +36,12 @@
 - 手机扫码 → 选择照片 / 视频 / 拍照，支持多选、上传进度、原图
 - 电脑拖文件进窗口 → 手机页面下载；也可以点「选择文件」
 - 手机发文字 / 链接 → 桌面文字卡片，一键复制
-- 大图预览，支持打开、在资源管理器中定位、复制路径
-- 收图自动按日期归档：`C:\Users\<你>\Pictures\星传\YYYY-MM-DD\`
+- 大图预览，支持打开、在文件管理器中定位、复制路径
+- 收图自动按日期归档：`~/Pictures/星传/YYYY-MM-DD/`（Windows 为 `C:\Users\<你>\Pictures\星传\...`）
 - 重名自动加序号，中文 / 空格文件名正常
 - **配对码与端口持久化**，重启应用 / 电脑后不用重新扫码
 - 手机在线时二维码面板自动收起，断开约 25 秒后自动展开
-- 单实例运行，重复双击只聚焦已有窗口
+- Windows 上单实例运行，重复双击只聚焦已有窗口
 - 一键「修复连接」放行 Windows 防火墙
 
 ## 快速开始
@@ -52,7 +52,7 @@
 
 | 平台 | 文件 | 说明 |
 | --- | --- | --- |
-| Windows 10/11 x64 | `StarDrop_<version>_x64-setup.exe` | 一键安装器；也提供便携版 `StarDrop-<version>-win-x64.zip` |
+| Windows 10/11 x64 | `StarDrop_<version>_x64-setup.exe` | 一键安装器；也提供便携版 `StarDrop-<version>-win-x64.zip`（自包含） |
 | macOS 11+（Apple Silicon） | `StarDrop_<version>_aarch64.dmg` | 未签名；首次打开请右键 App →「打开」 |
 | Linux x64 | `StarDrop_<version>_amd64.deb` / `.AppImage` | AppImage 需 `chmod +x` 后运行 |
 
@@ -179,12 +179,18 @@ scripts/                              构建 / 打包脚本
 
 ## 已知限制
 
-- 仅 Windows（Tauri 本身可移植，但 WebView2 相关逻辑需要调整）
+- Windows / macOS / Linux；macOS / Linux 构建较新、验证较少
 - 单实例与「修复连接」防火墙按钮仅 Windows 支持
-- macOS / Linux 构建较新、验证较少；核心传输逻辑共用，打开/定位分别走 Finder 与 `xdg-open`
+- macOS / Linux 的打开/定位分别走 Finder 与 `xdg-open`，没有 Windows 资源管理器那样的“选中文件”行为
 - HEIC 预览依赖系统解码器，解码失败时显示扩展名占位图，文件仍会正常保存
 - 手机浏览器必须与电脑网络互通；访客 Wi‑Fi / AP 隔离会导致打不开
 - 没有做断点续传，超大视频建议在稳定 Wi‑Fi 下传输
+
+## 常见问题
+
+### 提示缺少 `WebView2Loader.dll`
+
+说明启动的是 MinGW-w64 GNU 构建，但同目录没有这个 DLL。请改用 Windows 安装器（MSVC，自包含），或把 `WebView2Loader.dll` 和 `StarDrop.exe` 放在一起。Releases 里的 Windows 便携 zip 已经是自包含版本。
 
 ## License
 

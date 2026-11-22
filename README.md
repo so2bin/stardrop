@@ -36,12 +36,12 @@ When a phone connects, the QR panel collapses to a single “Phone connected” 
 - Scan a QR code on the phone, then pick photos / videos or take a photo — multi-select, progress, original quality
 - Drag files onto the desktop window to make them downloadable from the phone
 - Send text / links from the phone, copy them from a desktop card
-- Full-screen preview; open the file, reveal it in Explorer, copy its path
-- Auto archive by date: `C:\Users\<you>\Pictures\星传\YYYY-MM-DD\`
+- Full-screen preview; open the file, reveal it in the file manager, copy its path
+- Auto archive by date: `~/Pictures/星传/YYYY-MM-DD/` (`C:\Users\<you>\Pictures\星传\...` on Windows)
 - Duplicate names get a numeric suffix; Chinese and spaces in file names work
 - **Pairing PIN and port are persisted** — no re-scan after restarting the app or the PC
 - QR panel auto-collapses while a phone is connected and reopens after it disconnects
-- Single instance: launching again just focuses the existing window
+- Single instance on Windows: launching again just focuses the existing window
 - Built-in “Fix connection” button for the Windows Firewall rule
 
 ## Quick start
@@ -52,7 +52,7 @@ Get the installer for your platform from [Releases](https://github.com/so2bin/st
 
 | Platform | File | Notes |
 | --- | --- | --- |
-| Windows 10/11 x64 | `StarDrop_<version>_x64-setup.exe` | one-click installer; a portable `StarDrop-<version>-win-x64.zip` is also available |
+| Windows 10/11 x64 | `StarDrop_<version>_x64-setup.exe` | one-click installer; portable `StarDrop-<version>-win-x64.zip` is also available and self-contained |
 | macOS 11+ (Apple Silicon) | `StarDrop_<version>_aarch64.dmg` | unsigned; right-click the app → **Open** on first launch |
 | Linux x64 | `StarDrop_<version>_amd64.deb` / `.AppImage` | AppImage: `chmod +x` and run |
 
@@ -179,12 +179,18 @@ Pairing check: query parameter `k` or header `X-Key`.
 
 ## Limitations
 
-- Windows only (Tauri itself is portable, but the WebView2-specific bits need work)
+- Windows / macOS / Linux; the macOS and Linux builds are new and lightly tested
 - Single instance and the “Fix connection” firewall helper are Windows-only
-- macOS / Linux builds are new and lightly tested; the core transfer flow is shared, but open/reveal uses Finder / `xdg-open`
+- On macOS/Linux, open/reveal uses Finder / `xdg-open`; the Windows “select the file in Explorer” behavior is not available
 - HEIC preview depends on the system codec; if decoding fails you get an extension placeholder, but the file is still saved
 - The phone and PC must be able to reach each other; guest Wi-Fi / AP isolation will block it
 - No resume support — prefer a stable Wi-Fi connection for very large videos
+
+## Troubleshooting
+
+### “WebView2Loader.dll is missing”
+
+You are launching a MinGW-w64 GNU build without its companion DLL. Use the Windows installer (MSVC, self-contained), or keep `WebView2Loader.dll` next to `StarDrop.exe`. The portable zip on the Releases page is already the self-contained build.
 
 ## License
 
