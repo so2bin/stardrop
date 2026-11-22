@@ -1,160 +1,165 @@
-# 星传 StarDrop
+# StarDrop
 
-> 手机照片，秒落到电脑上。扫码即传，手机零安装。
->
-> Phone → PC photo transfer over Wi-Fi. Scan a QR code, pick photos, done. No phone app required.
+> Phone photos, straight to your PC. Scan a QR code, pick photos — done. No phone app to install.
 
-![build](https://github.com/so2bin/stardrop/actions/workflows/build.yml/badge.svg)
+[![build](https://github.com/so2bin/stardrop/actions/workflows/build.yml/badge.svg)](https://github.com/so2bin/stardrop/actions/workflows/build.yml)
 ![platform](https://img.shields.io/badge/platform-Windows%2010%2F11-0078D4)
 ![tauri](https://img.shields.io/badge/Tauri-2-24C8DB)
 ![license](https://img.shields.io/badge/license-MIT-green)
 
-## 为什么是浏览器页面，而不是星闪 App
+**English** | [简体中文](README.zh-CN.md)
 
-华为星闪（NearLink）的文件互传属于华为生态内的私有能力，**Windows 侧没有面向第三方应用的公开文件传输 SDK / API**。做原生星闪 App 只能覆盖华为手机，还要鸿蒙原生开发与签名，成本高、覆盖面窄。
+## Why a browser page instead of a NearLink app
 
-星传选择「同一局域网 + 手机浏览器页面」：
+Huawei NearLink (星闪) file transfer is a private capability inside the Huawei ecosystem. There is **no public Windows SDK / API** for third-party apps to send files over NearLink. A native NearLink app would only cover Huawei phones, and would still require HarmonyOS native development and signing — high cost, narrow reach.
 
-- iPhone / 安卓 / 鸿蒙通吃，手机**不用装 App**
-- 原图直传，不经过任何云服务
-- 电脑端一个 Tauri 桌面应用，手机端就是一个二维码
-- 如果电脑的星闪以网络适配器形式出现（或手机开热点、USB 网络共享），页面同样直接走那个网络，代码不用改
+StarDrop takes the LAN + mobile browser route:
 
-## 截图
+- Works on iPhone, Android and HarmonyOS — **nothing to install on the phone**
+- Original quality, direct transfer, no cloud in the middle
+- One Tauri desktop app; the phone side is just a QR code
+- If NearLink shows up as a network adapter on the PC (or you use a hotspot / USB tethering), the same page works over that network with no code changes
 
-| 桌面端 | 手机端 |
-| --- | --- |
-| ![桌面端](docs/screenshots/app.png) | ![手机端](docs/screenshots/mobile.png) |
+## Screenshots
 
-手机连上后，二维码面板会自动收起，只保留“手机连接 · 已连接”一行；点击标题可重新展开，手机断开约 25 秒后自动恢复展开。
+<table>
+<tr>
+<td><img src="docs/screenshots/app.png" width="760" alt="StarDrop desktop app" /></td>
+<td><img src="docs/screenshots/mobile.png" width="250" alt="StarDrop mobile page" /></td>
+</tr>
+</table>
 
-## 功能
+When a phone connects, the QR panel collapses to a single “Phone connected” row. Click the header to expand it again; it reopens automatically about 25 seconds after the phone disconnects.
 
-- 手机扫码 → 选择照片 / 视频 / 拍照，支持多选、上传进度、原图
-- 电脑拖文件进窗口 → 手机页面底部下载；也可以点“选择文件”
-- 手机发文字 / 链接 → 桌面文字卡片，一键复制
-- 大图预览，支持打开、在资源管理器中定位、复制路径
-- 收图自动按日期归档：`图片\星传\YYYY-MM-DD\`
-- 重名自动加序号，中文 / 空格文件名正常
-- **配对码与端口持久化**，重启应用 / 电脑后不用重新扫码
-- 手机在线时二维码面板自动收起，断开 25 秒后自动展开
-- 单实例运行，重复双击只聚焦已有窗口
-- 一键“修复连接”放行 Windows 防火墙
+## Features
 
-## 快速开始
+- Scan a QR code on the phone, then pick photos / videos or take a photo — multi-select, progress, original quality
+- Drag files onto the desktop window to make them downloadable from the phone
+- Send text / links from the phone, copy them from a desktop card
+- Full-screen preview; open the file, reveal it in Explorer, copy its path
+- Auto archive by date: `C:\Users\<you>\Pictures\星传\YYYY-MM-DD\`
+- Duplicate names get a numeric suffix; Chinese and spaces in file names work
+- **Pairing PIN and port are persisted** — no re-scan after restarting the app or the PC
+- QR panel auto-collapses while a phone is connected and reopens after it disconnects
+- Single instance: launching again just focuses the existing window
+- Built-in “Fix connection” button for the Windows Firewall rule
 
-### 下载
+## Quick start
 
-到 [Releases](https://github.com/so2bin/stardrop/releases/latest) 下载 `StarDrop-<version>-win-x64.zip`，解压后双击 `StarDrop.exe`。
+### Download
 
-> Windows 可能提示“未知发布者”，这是未签名的开源程序，选择“更多信息 → 仍要运行”即可。
-> 首次启动如果弹出防火墙提示，请勾选专用/公用网络并允许，否则手机无法访问。
+Grab `StarDrop-<version>-win-x64.zip` from [Releases](https://github.com/so2bin/stardrop/releases/latest), unzip it, and run `StarDrop.exe`.
 
-### 使用
+> The build is unsigned. If Windows SmartScreen warns, choose **More info → Run anyway**.
+> On first launch, allow the Windows Firewall prompt for private/public networks, otherwise the phone cannot connect.
 
-1. 手机连上与电脑相同的 Wi‑Fi（星闪网络、热点也行）
-2. 用手机相机 / 浏览器扫描窗口右侧二维码
-3. 选照片，自动保存到 `C:\Users\<你>\Pictures\星传\<日期>\`
-4. 电脑要发文件给手机：把文件拖进窗口，手机页面底部点下载
+### Usage
 
-电脑上的配对码和端口保存在：
+1. Connect the phone to the same Wi-Fi as the PC (NearLink network, hotspot, or USB tethering also work).
+2. Scan the QR code in the app with the phone camera or browser.
+3. Pick photos — they are saved to `C:\Users\<you>\Pictures\星传\<date>\`.
+4. To send files the other way, drag them into the app window and download them from the phone page.
+
+The PIN and port live in:
 
 ```
 %LOCALAPPDATA%\StarDrop\config.json
 ```
 
-形如 `{"pin":"1234","port":47823}`。想换配对码或端口，关闭应用后修改此文件再启动。
+For example `{"pin":"1234","port":47823}`. To change them, close the app, edit this file, and start it again.
 
-## 构建
+## Build
 
-### 依赖
+### Requirements
 
-- Windows 10/11 + WebView2 Runtime（Win11 自带）
+- Windows 10/11 with the WebView2 Runtime (bundled with Windows 11; usually present on Windows 10)
 - Rust 1.90+
-- MSVC 工具链（推荐）或 MinGW-w64 GNU 工具链（本项目在 GNU 下也验证过）
+- MSVC toolchain (recommended) or MinGW-w64 GNU toolchain (this project has also been verified with GNU)
 
-### 编译
+### Compile
 
 ```powershell
 cargo build --release --manifest-path src-tauri/Cargo.toml
 ```
 
-产物在 `src-tauri/target/release/stardrop.exe`。
+The binary is `src-tauri/target/release/stardrop.exe`.
 
-- **MSVC 工具链**：WebView2Loader 静态链接，单个 exe 即可运行
-- **MinGW-w64 GNU 工具链**：同目录会生成 `WebView2Loader.dll`，运行时必须和 exe 放在一起，否则会报 `0xC0000135`
+- **MSVC**: WebView2Loader is linked statically — the exe is self-contained.
+- **MinGW-w64 GNU**: a `WebView2Loader.dll` is produced next to the exe. It must be shipped together with the exe, otherwise the app fails with `0xC0000135`.
 
-`scripts/package.ps1` 会自动处理：存在 `WebView2Loader.dll` 就一起打进 zip，不存在则跳过。
-
-### 打包
+### Package
 
 ```powershell
 pwsh scripts/package.ps1
 ```
 
-生成 `dist/StarDrop-<version>-win-x64.zip`，内含 exe、图标、使用说明和卸载脚本；GNU 构建会额外包含 `WebView2Loader.dll`。
+This creates `dist/StarDrop-<version>-win-x64.zip` with the exe, icon, usage notes and uninstall script; GNU builds also include `WebView2Loader.dll`. If PowerShell blocks the script, run:
 
-### 开发说明
+```powershell
+powershell -NoProfile -ExecutionPolicy Bypass -File scripts/package.ps1
+```
 
-前端是原生 HTML/CSS/JS，没有打包器。`ui/` 下的资源在编译期通过 `include_str!` 内嵌进 exe，所以**改完 UI 需要重新 `cargo build`**，不存在热更新。
+### Development notes
 
-## 项目结构
+The frontend is plain HTML/CSS/JS with no bundler. Everything under `ui/` is embedded into the exe at compile time via `include_str!`, so **UI changes require a rebuild** — there is no hot reload.
+
+## Project layout
 
 ```
 ui/
-  index.html / styles.css / app.js     桌面端界面
-  mobile.html / mobile.css / mobile.js 手机端页面（由本地服务在 / 提供）
-  qr.js                               二维码生成（byte mode / EC M）
+  index.html / styles.css / app.js       desktop UI
+  mobile.html / mobile.css / mobile.js   phone page (served at /)
+  qr.js                                  QR generator (byte mode / EC M)
 src-tauri/
-  src/main.rs                         Tauri 命令、单实例、DPI、WebView2 数据目录
-  src/model.rs                        状态、配置持久化、配对码/端口
-  src/server.rs                       HTTP 服务、上传/下载/缩略图
-  src/util.rs                         时间、文件名、IP、编码
-  app.manifest                        PerMonitorV2 DPI 感知
+  src/main.rs                            Tauri commands, single instance, DPI, WebView2 data dir
+  src/model.rs                           state, persisted config, PIN / port
+  src/server.rs                          HTTP server, upload / download / thumbnails
+  src/util.rs                            time, file names, IPs, encoding
+  app.manifest                           PerMonitorV2 DPI awareness
   tauri.conf.json
-install/                              安装附带的使用说明与卸载脚本
-scripts/                              构建 / 打包脚本
+install/                                 usage notes and uninstall script shipped with the app
+scripts/                                 build / package scripts
 ```
 
-## 实现要点
+## Implementation notes
 
-- **HTTP 服务**：`std::net::TcpListener` + 每连接一个线程，手写请求解析、chunked 解码、流式落盘；不依赖 axum/hyper，二进制更小。
-- **手机端**：单页 H5，XHR 上传进度、3 并发、失败提示；页面每 5 秒轮询待下载列表，同时作为在线心跳。
-- **二维码**：`ui/qr.js` 自实现 QR（byte mode / EC level M / version 1–6），已用 OpenCV 解码验证。
-- **缩略图**：`image` crate 解码后生成 520px JPEG，内存缓存。
-- **在线状态**：只有手机侧接口（上传 / 文字 / 拉取 outbox）刷新 `last_seen`；桌面自己加载缩略图不会误判。
-- **DPI**：自带 `app.manifest` 声明 PerMonitorV2，200% 缩放下窗口不会溢出屏幕。
-- **端口**：优先配置端口 → 47823–47852 → 系统临时端口，成功绑定后写回配置。
+- **HTTP server**: `std::net::TcpListener` plus one thread per connection, with hand-written request parsing, chunked decoding and streaming to disk. No axum/hyper, so the binary stays small.
+- **Phone page**: a single-page H5 app with XHR upload progress, 3 concurrent uploads and retry hints. It polls the download list every 5 seconds, which doubles as the presence heartbeat.
+- **QR code**: `ui/qr.js` implements QR generation (byte mode / EC level M / versions 1–6); verified with OpenCV decoding.
+- **Thumbnails**: decoded with the `image` crate, resized to 520 px JPEG and cached in memory.
+- **Presence**: only phone-facing calls (upload / text / outbox polling) refresh `last_seen`; the desktop loading its own thumbnails does not count.
+- **DPI**: `app.manifest` declares PerMonitorV2 so the window does not overflow at 200% scaling.
+- **Port**: saved port first, then 47823–47852, then an ephemeral port; the chosen port is written back to the config.
 
-## HTTP 接口
+## HTTP API
 
-| 方法 | 路径 | 说明 |
+| Method | Path | Description |
 | --- | --- | --- |
-| GET | `/`、`/m.css`、`/m.js` | 手机端页面 |
-| GET | `/api/info` | 设备名（无需配对码） |
-| GET | `/api/outbox?k=` | 手机拉取待下载列表（同时作为心跳） |
-| POST | `/api/upload?name=` | 手机上传，原始 body 流式落盘 |
-| POST | `/api/text` | 手机发文字 |
-| POST | `/api/outbox?name=` | 桌面浏览器选文件后写入待发送 |
-| GET | `/thumb?id=&k=` | 缩略图 |
-| GET | `/file?id=&k=` | 原图 / 视频内联 |
-| GET | `/download?id=&k=` | 附件下载（RFC 5987 中文文件名） |
+| GET | `/`, `/m.css`, `/m.js` | Phone page |
+| GET | `/api/info` | Device name (no PIN required) |
+| GET | `/api/outbox?k=` | Pending downloads for the phone (presence heartbeat) |
+| POST | `/api/upload?name=` | Phone upload; raw body streamed to disk |
+| POST | `/api/text` | Send text from the phone |
+| POST | `/api/outbox?name=` | Desktop file picker adds a file to the outbox |
+| GET | `/thumb?id=&k=` | Thumbnail |
+| GET | `/file?id=&k=` | Original image / video, inline |
+| GET | `/download?id=&k=` | Attachment download (RFC 5987 file names) |
 
-配对码校验：query 参数 `k` 或请求头 `X-Key`。
+Pairing check: query parameter `k` or header `X-Key`.
 
-## 安全说明
+## Security
 
-- 服务只监听局域网，照片不经过任何服务器
-- 配对码在二维码 URL 中，相当于一次性的局域网口令；请勿把端口转发到公网
-- 明文 HTTP，仅建议在可信家庭 / 办公网络使用
-- 收到的文件会直接写入磁盘，请只让自己信任的设备扫码
+- The server listens on the LAN only; photos never leave your network
+- The PIN lives in the QR URL, effectively a local network passphrase. Do not port-forward it to the internet.
+- Plain HTTP; use it on trusted home / office networks
+- Received files are written straight to disk — only let devices you trust scan the code
 
-## 已知限制
+## Limitations
 
-- 仅 Windows（Tauri 也可以移植到 macOS / Linux，但 WebView2 相关逻辑需要调整）
-- HEIC 预览依赖系统解码器，解码失败时显示扩展名占位图，文件仍会正常保存
-- 手机浏览器必须与电脑网络互通；访客 Wi‑Fi / AP 隔离会导致打不开
-- 没有做断点续传，超大视频建议在稳定 Wi‑Fi 下传输
+- Windows only (Tauri itself is portable, but the WebView2-specific bits need work)
+- HEIC preview depends on the system codec; if decoding fails you get an extension placeholder, but the file is still saved
+- The phone and PC must be able to reach each other; guest Wi-Fi / AP isolation will block it
+- No resume support — prefer a stable Wi-Fi connection for very large videos
 
 ## License
 
